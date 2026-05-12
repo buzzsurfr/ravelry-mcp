@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Version bump type'
+        required: true
+        type: choice
+        default: patch
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  release:
+    name: Bump version & release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # push commit + tag, create release
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history so --generate-notes spans all commits
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version
+        # Updates package.json + package-lock.json, commits, and creates a signed tag
+        run: npm version ${{ inputs.release_type }} -m "chore: release v%s"
+
+      - name: Push commit and tag
+        run: git push --follow-tags origin ${{ github.ref_name }}
+
+      - name: Read new version
+        id: version
+        run: echo "tag=v$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          generate_release_notes: true  # auto-builds notes from merged PRs / commits since last release
