@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime files
+.env
+.env.local
+.env.*.local
+
+# VS Code settings
+.vscode/
+
+# macOS
+.DS_Store
+
+# Editor directories and files
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Test coverage
+coverage/
+
+# TypeScript
+*.tsbuildinfo
+
+# Misc
+*.log
