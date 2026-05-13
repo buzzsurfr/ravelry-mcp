@@ -45,5 +45,17 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Check if version already published
+        id: check
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "ravelry-mcp@${VERSION}" version 2>/dev/null | grep -q "${VERSION}"; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Version ${VERSION} already exists on npm — skipping publish."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Publish to npm
+        if: steps.check.outputs.skip == 'false'
         run: npm publish --provenance --access public
