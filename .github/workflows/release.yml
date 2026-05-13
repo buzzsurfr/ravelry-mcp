@@ -21,7 +21,7 @@ jobs:
       contents: write  # push commit + tag, create release
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0  # full history so --generate-notes spans all commits
 
